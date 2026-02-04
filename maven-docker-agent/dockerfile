@@ -1,0 +1,30 @@
+# Base image with Maven and Java 17
+FROM maven:3.9-eclipse-temurin-17
+
+# Switch to root user
+USER root
+
+# Install Docker CLI, Git, and other tools
+RUN apt-get update && \
+    apt-get install -y \
+    docker.io \
+    git \
+    curl \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set Java environment
+ENV JAVA_HOME=/opt/java/openjdk
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
+# Verify installations
+RUN java -version && \
+    mvn -version && \
+    docker --version && \
+    git --version
+
+# Set working directory
+WORKDIR /workspace
+
+# Default command
+CMD ["/bin/bash"]
