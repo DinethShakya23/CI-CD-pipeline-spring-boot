@@ -19,7 +19,7 @@ pipeline {
     // Docker Hub registry URL for pushing container images
     DOCKER_REGISTRY = 'https://index.docker.io/v1/'
     // SonarQube server URL for code quality analysis
-    SONAR_URL = 'http://13.235.41.162:8080'
+    SONAR_URL = 'http://13.235.41.162:9000'
     // GitHub credentials for automatic deployment file updates
     GIT_USER_NAME = 'DinethShakya23'
     GIT_USER_EMAIL = 'dinethshakya19@gmail.com'
