@@ -79,7 +79,7 @@ pipeline {
           def dockerImage = docker.image("${DOCKER_IMAGE}")
           // Authenticate with Docker Hub and push image
           // Requires Jenkins credential 'docker-cred' with Docker Hub credentials
-          docker.withRegistry("${DOCKER_REGISTRY}", 'docker-cred') {
+          docker.withRegistry("${DOCKER_REGISTRY}", 'dockerhub-credentials') {
             dockerImage.push()
           }
           echo "Docker image pushed successfully"
