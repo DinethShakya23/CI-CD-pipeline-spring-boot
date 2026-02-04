@@ -1,5 +1,5 @@
 // ============================================================================
-// CI/CD Pipeline for Spring Boot Application by Dineth Shaky@
+// CI/CD Pipeline for Spring Boot Application by Dineth Shakya
 // Stages: Build → Test → Code Analysis → Docker Build/Push → GitOps Update
 // ============================================================================
 
@@ -26,16 +26,16 @@ pipeline {
     // Repository where deployment configuration is stored
     GIT_REPO_NAME = 'CI-CD-pipeline-spring-boot'
     // Docker image tag includes build number for automatic versioning
-    DOCKER_IMAGE = "dinethshakya/ultimate-cicd:${BUILD_NUMBER}"
+    DOCKER_IMAGE = "dinethshakya/spring-boot-app:${BUILD_NUMBER}"
   }
 
   stages {
     // ========== STAGE 1: CHECKOUT ==========
     // Retrieves source code from version control
-    // Currently disabled for local testing (uncomment to fetch from GitHub)
     stage('Checkout') {
       steps {
         echo 'Checking out source code...'
+        checkout scm
       }
     }
 
@@ -68,7 +68,7 @@ pipeline {
     // ========== STAGE 4: DOCKER BUILD & PUSH ==========
     // Containerizes the Spring Boot application
     // Pushes Docker image to Docker Hub registry for deployment
-    // Image versioned automatically using Jenkins BUILD_NUMBER (e.g., ultimate-cicd:42)
+    // Image versioned automatically using Jenkins BUILD_NUMBER
     stage('Build and Push Docker Image') {
       steps {
         echo "Building Docker image: ${DOCKER_IMAGE}"
@@ -90,45 +90,62 @@ pipeline {
     // ========== STAGE 5: UPDATE DEPLOYMENT (GitOps) ==========
     // Automatically updates deployment configuration with new Docker image version
     // Updates deployment.yml in GitHub repository
-    // This triggers the CD pipeline (ArgoCD, Flux, etc.) to deploy new version
+    // This triggers the CD pipeline (ArgoCD) to deploy new version
     stage('Update Deployment File') {
       steps {
         echo 'Updating deployment configuration...'
         // Retrieve GitHub access token from Jenkins credentials vault
         withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
           sh '''
-            // Construct GitHub repository URL with authentication
+            # Construct GitHub repository URL with authentication
             GIT_REPO_URL="https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git"
 
-            // Clone repository if first time, otherwise update existing local copy
+            # Clone repository if first time, otherwise update existing local copy
             if [ -d "${GIT_REPO_NAME}" ]; then
               cd ${GIT_REPO_NAME}
-              // Fetch latest changes from remote repository
+              # Fetch latest changes from remote repository
               git pull origin main
             else
-              // Clone the entire repository from GitHub
+              # Clone the entire repository from GitHub
               git clone ${GIT_REPO_URL}
               cd ${GIT_REPO_NAME}
             fi
 
-            // Configure Git with user information for commits
+            # Configure Git with user information for commits
             git config user.email "${GIT_USER_EMAIL}"
             git config user.name "${GIT_USER_NAME}"
 
-            // Ensure we're on the main branch
+            # Ensure we're on the main branch
             git checkout main
-            // Replace old Docker image tag with new BUILD_NUMBER in deployment.yml
-            // Pattern: finds "dinethshakya/ultimate-cicd:<old_version>" and updates version
-            sed -i -E "s/(dinethshakya\\/ultimate-cicd:)[^ ]*/\\1${BUILD_NUMBER}/" deployment.yml
-            // Stage the modified file for commit
+            
+            # Replace old Docker image tag with new BUILD_NUMBER in deployment.yml
+            # Pattern: finds "dinethshakya/spring-boot-app:<old_version>" and updates version
+            sed -i "s|dinethshakya/spring-boot-app:[0-9]*|dinethshakya/spring-boot-app:${BUILD_NUMBER}|g" deployment.yml
+            
+            # Stage the modified file for commit
             git add deployment.yml
-            // Create commit with descriptive message
+            
+            # Create commit with descriptive message
             git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-            // Push changes back to GitHub main branch
+            
+            # Push changes back to GitHub main branch
             git push ${GIT_REPO_URL} HEAD:main
           '''
         }
       }
+    }
+  }
+
+  // Post-build actions
+  post {
+    always {
+      echo 'Pipeline execution completed'
+    }
+    success {
+      echo 'Pipeline succeeded! Docker image built and deployment updated.'
+    }
+    failure {
+      echo 'Pipeline failed! Check logs for errors.'
     }
   }
 }
@@ -149,4 +166,6 @@ pipeline {
 // • SonarQube Server: Must be accessible at http://13.235.41.162:8080
 // • Docker Hub: Must be accessible for pushing images
 // • GitHub: Requires git to be available and token to have repo write access
+//
+// Image Format: dinethshakya/spring-boot-app:1, :2, :3, etc.
 // ============================================================================
