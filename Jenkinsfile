@@ -95,7 +95,7 @@ pipeline {
       steps {
         echo 'Updating deployment configuration...'
         // Retrieve GitHub access token from Jenkins credentials vault
-        withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+        withCredentials([string(credentialsId: 'github-ci-cd', variable: 'GITHUB_TOKEN')]) {
           sh '''
             # Construct GitHub repository URL with authentication
             GIT_REPO_URL="https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git"
