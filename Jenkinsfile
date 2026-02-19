@@ -7,11 +7,11 @@ pipeline {
   // Agent configuration: Run pipeline in Docker container with Maven, Java, Docker
   agent {
     docker {
-      // Custom image with Maven, Java, Docker CLI, and Git pre-installed
-      image 'dinethshakya/maven-docker-agent:java17-v1'
+      // Custom image with Maven 3.9, Java 17, Docker CLI, and Git pre-installed
+      // Built and maintained by: Dineth Shakya
+      image 'dinethshakya/maven-docker-agent:v1'
       // Mount Docker socket to enable Docker commands inside container (Docker-in-Docker)
       args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
-      // args '--user 111:113 -v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
 
@@ -20,7 +20,7 @@ pipeline {
     // Docker Hub registry URL for pushing container images
     DOCKER_REGISTRY = 'https://index.docker.io/v1/'
     // SonarQube server URL for code quality analysis
-    SONAR_URL = 'http://13.235.41.162:9000'
+    SONAR_URL = 'http://13.235.41.162:8080'
     // GitHub credentials for automatic deployment file updates
     GIT_USER_NAME = 'DinethShakya23'
     GIT_USER_EMAIL = 'dinethshakya19@gmail.com'
@@ -30,15 +30,7 @@ pipeline {
     DOCKER_IMAGE = "dinethshakya/spring-boot-app:${BUILD_NUMBER}"
   }
 
-
   stages {
-
-    stage('Clean Workspace') {
-      steps {
-        cleanWs()
-      }
-    }
-    
     // ========== STAGE 1: CHECKOUT ==========
     // Retrieves source code from version control
     stage('Checkout') {
@@ -67,7 +59,7 @@ pipeline {
       steps {
         echo 'Running SonarQube analysis...'
         // Retrieve SonarQube auth token from Jenkins credentials vault
-        withCredentials([string(credentialsId: 'Token_For_SonarQube', variable: 'SONAR_AUTH_TOKEN')]) {
+        withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
           // Execute Maven sonar plugin and submit results to SonarQube server
           sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
         }
@@ -88,7 +80,7 @@ pipeline {
           def dockerImage = docker.image("${DOCKER_IMAGE}")
           // Authenticate with Docker Hub and push image
           // Requires Jenkins credential 'docker-cred' with Docker Hub credentials
-          docker.withRegistry("${DOCKER_REGISTRY}", 'dockerhub-credentials') {
+          docker.withRegistry("${DOCKER_REGISTRY}", 'docker-cred') {
             dockerImage.push()
           }
           echo "Docker image pushed successfully"
@@ -104,7 +96,7 @@ pipeline {
       steps {
         echo 'Updating deployment configuration...'
         // Retrieve GitHub access token from Jenkins credentials vault
-        withCredentials([string(credentialsId: 'github-ci-cd', variable: 'GITHUB_TOKEN')]) {
+        withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
           sh '''
             # Construct GitHub repository URL with authentication
             GIT_REPO_URL="https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git"
@@ -158,3 +150,23 @@ pipeline {
     }
   }
 }
+
+// ============================================================================
+// PIPELINE REQUIREMENTS & SETUP
+// ============================================================================
+// Jenkins Credentials needed (in Jenkins → Manage Credentials):
+// 1. 'sonarqube' - Secret text with SonarQube authentication token
+// 2. 'docker-cred' - Username/Password with Docker Hub credentials
+// 3. 'github' - Secret text with GitHub Personal Access Token (PAT)
+//
+// Required Files:
+// • Dockerfile: Must exist in project root to build container image
+// • deployment.yml: Must exist in CI-CD-pipeline-spring-boot repo on GitHub
+//
+// Required Services:
+// • SonarQube Server: Must be accessible at http://13.235.41.162:8080
+// • Docker Hub: Must be accessible for pushing images
+// • GitHub: Requires git to be available and token to have repo write access
+//
+// Image Format: dinethshakya/spring-boot-app:1, :2, :3, etc.
+// ============================================================================
