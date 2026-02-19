@@ -10,8 +10,8 @@ pipeline {
       // Custom image with Maven, Java, Docker CLI, and Git pre-installed
       image 'dinethshakya/maven-docker-agent:java17-v1'
       // Mount Docker socket to enable Docker commands inside container (Docker-in-Docker)
-      // args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
-      args '--user 111:113 -v /var/run/docker.sock:/var/run/docker.sock'
+      args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
+      // args '--user 111:113 -v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
 
@@ -29,6 +29,12 @@ pipeline {
     // Docker image tag includes build number for automatic versioning
     DOCKER_IMAGE = "dinethshakya/spring-boot-app:${BUILD_NUMBER}"
   }
+
+  stage('Clean Workspace') {
+    steps {
+      cleanWs()
+      }
+    }
 
   stages {
     // ========== STAGE 1: CHECKOUT ==========
@@ -150,23 +156,3 @@ pipeline {
     }
   }
 }
-
-// ============================================================================
-// PIPELINE REQUIREMENTS & SETUP
-// ============================================================================
-// Jenkins Credentials needed (in Jenkins → Manage Credentials):
-// 1. 'sonarqube' - Secret text with SonarQube authentication token
-// 2. 'docker-cred' - Username/Password with Docker Hub credentials
-// 3. 'github' - Secret text with GitHub Personal Access Token (PAT)
-//
-// Required Files:
-// • Dockerfile: Must exist in project root to build container image
-// • deployment.yml: Must exist in CI-CD-pipeline-spring-boot repo on GitHub
-//
-// Required Services:
-// • SonarQube Server: Must be accessible at http://13.235.41.162:8080
-// • Docker Hub: Must be accessible for pushing images
-// • GitHub: Requires git to be available and token to have repo write access
-//
-// Image Format: dinethshakya/spring-boot-app:1, :2, :3, etc.
-// ============================================================================
