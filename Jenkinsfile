@@ -10,7 +10,7 @@ pipeline {
       // Custom image with Maven 3.9, Java 17, Docker CLI, and Git pre-installed
       // Built and maintained by: Dineth Shakya
       // image 'dinethshakya/maven-docker-agent:v1'                                               
-      image ' dinethshakya/maven-docker-agent:java17-v1'
+      image 'dinethshakya/maven-docker-agent:java17-v1'
       // Mount Docker socket to enable Docker commands inside container (Docker-in-Docker)
       args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
     }
