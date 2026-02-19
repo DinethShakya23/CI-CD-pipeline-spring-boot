@@ -30,13 +30,15 @@ pipeline {
     DOCKER_IMAGE = "dinethshakya/spring-boot-app:${BUILD_NUMBER}"
   }
 
-  stage('Clean Workspace') {
-    steps {
-      cleanWs()
-      }
-    }
 
   stages {
+
+    stage('Clean Workspace') {
+      steps {
+        cleanWs()
+      }
+    }
+    
     // ========== STAGE 1: CHECKOUT ==========
     // Retrieves source code from version control
     stage('Checkout') {
