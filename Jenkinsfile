@@ -60,7 +60,7 @@ pipeline {
       steps {
         echo 'Running SonarQube analysis...'
         // Retrieve SonarQube auth token from Jenkins credentials vault
-        withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+        withCredentials([string(credentialsId: 'Token_For_SonarQube', variable: 'SONAR_AUTH_TOKEN')]) {
           // Execute Maven sonar plugin and submit results to SonarQube server
           sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
         }
