@@ -13,7 +13,7 @@ pipeline {
     DOCKER_REGISTRY = 'https://index.docker.io/v1/'
     SONAR_URL = 'http://13.235.41.162:9000'
     GIT_USER_NAME = 'DinethShakya23'
-    GIT_USER_EMAIL = 'dinethshakya19@gmail.com'
+    GIT_USER_EMAIL = '150885267+DinethShakya23@users.noreply.github.com.'
     GIT_REPO_NAME = 'CI-CD-pipeline-spring-boot'
   }
   stages {
