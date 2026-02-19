@@ -10,8 +10,8 @@ pipeline {
       // Custom image with Maven, Java, Docker CLI, and Git pre-installed
       image 'dinethshakya/maven-docker-agent:java17-v1'
       // Mount Docker socket to enable Docker commands inside container (Docker-in-Docker)
-      // args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
-      args '--user 111:113 -v /var/run/docker.sock:/var/run/docker.sock'
+      args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
+      // args '--user 111:113 -v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
 
