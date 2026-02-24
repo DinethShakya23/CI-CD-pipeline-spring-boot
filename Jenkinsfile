@@ -3,6 +3,9 @@
 // Stages: Build → Test → Code Analysis → Docker Build/Push → GitOps Update
 // ============================================================================
 pipeline {
+  options {
+    disableConcurrentBuilds()
+  }
   agent {
     docker {
       image 'dinethshakya/maven-docker-agent:java17-v1'
@@ -17,6 +20,18 @@ pipeline {
     GIT_REPO_NAME = 'CI-CD-pipeline-spring-boot'
   }
   stages {
+      stage('Check Commit Author') {
+        steps {
+          script {
+            def commitAuthor = sh(script: 'git log -1 --pretty=format:%an', returnStdout: true).trim()
+            echo "Commit author: ${commitAuthor}"
+            if (commitAuthor == 'DinethShakya23') {
+              currentBuild.result = 'NOT_BUILT'
+              error("Skipping build triggered by Jenkins commit")
+            }
+          }
+        }
+    }
     stage('Build and Test') {
       steps {
         echo 'Building and testing application...'
