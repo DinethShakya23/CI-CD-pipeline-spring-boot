@@ -40,6 +40,12 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Spring Boot Actuator for metrics and health checks -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <!-- debugging -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

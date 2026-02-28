@@ -1,25 +1,272 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"/>
-    <link data-th-href="@{/css/main.css?{id}(id=${timestamp})}" rel="stylesheet">
-    <title>CI/CD</title>
-</head>
-<body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link
+      data-th-href="@{/css/main.css?{id}(id=${timestamp})}"
+      rel="stylesheet"
+    />
+    <title>CI/CD Pipeline - Spring Boot Demo</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#">
+          <i class="fas fa-rocket"></i> CI/CD Pipeline Demo
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#pipeline">Pipeline</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#tech-stack">Tech Stack</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#status">Status</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
 
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="#">Ultimate CI/CD Pipeline</div></a>
-</nav>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container">
+        <div class="hero-content">
+          <div class="badge-success mb-3">
+            <i class="fas fa-check-circle"></i> Deployment Successful
+          </div>
+          <h1 class="hero-title" th:text="${title}">
+            Spring Boot Application Successfully Built
+          </h1>
+          <p class="hero-subtitle" th:text="${msg}">
+            Deployed to Kubernetes using Argo CD
+          </p>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <i class="fas fa-code-branch"></i>
+              <span class="stat-label">Version</span>
+              <span class="stat-value">1.0</span>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-server"></i>
+              <span class="stat-label">Status</span>
+              <span class="stat-value live-indicator">Live</span>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-shield-alt"></i>
+              <span class="stat-label">Build</span>
+              <span class="stat-value">Passing</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<main role="main" class="container">
-    <div class="starter-template">
-        <h1 th:text="${title}">Default title.</h1>
-        <p th:text="${msg}">Default text.</p>
-    </div>
-</main>
+    <!-- Pipeline Stages -->
+    <section id="pipeline" class="pipeline-section">
+      <div class="container">
+        <h2 class="section-title">
+          <i class="fas fa-sitemap"></i> CI/CD Pipeline Stages
+        </h2>
+        <div class="pipeline-stages">
+          <div class="stage completed">
+            <div class="stage-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <h3 class="stage-title">Source Code</h3>
+            <p class="stage-desc">Code pushed to Git repository</p>
+            <div class="stage-status">
+              <i class="fas fa-check"></i> Completed
+            </div>
+          </div>
+          <div class="pipeline-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+          <div class="stage completed">
+            <div class="stage-icon">
+              <i class="fas fa-hammer"></i>
+            </div>
+            <h3 class="stage-title">Build</h3>
+            <p class="stage-desc">Maven builds the application</p>
+            <div class="stage-status">
+              <i class="fas fa-check"></i> Completed
+            </div>
+          </div>
+          <div class="pipeline-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+          <div class="stage completed">
+            <div class="stage-icon">
+              <i class="fas fa-vial"></i>
+            </div>
+            <h3 class="stage-title">Test</h3>
+            <p class="stage-desc">Unit & Integration tests</p>
+            <div class="stage-status">
+              <i class="fas fa-check"></i> Completed
+            </div>
+          </div>
+          <div class="pipeline-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+          <div class="stage completed">
+            <div class="stage-icon">
+              <i class="fab fa-docker"></i>
+            </div>
+            <h3 class="stage-title">Containerize</h3>
+            <p class="stage-desc">Docker image creation</p>
+            <div class="stage-status">
+              <i class="fas fa-check"></i> Completed
+            </div>
+          </div>
+          <div class="pipeline-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+          <div class="stage completed">
+            <div class="stage-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <h3 class="stage-title">Deploy</h3>
+            <p class="stage-desc">Kubernetes with Argo CD</p>
+            <div class="stage-status">
+              <i class="fas fa-check"></i> Completed
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<script data-th-src="@{/js/main.js}"></script>
-</body>
+    <!-- Tech Stack -->
+    <section id="tech-stack" class="tech-section">
+      <div class="container">
+        <h2 class="section-title">
+          <i class="fas fa-layer-group"></i> Technology Stack
+        </h2>
+        <div class="tech-grid">
+          <div class="tech-card">
+            <div class="tech-icon spring-boot">
+              <i class="fas fa-leaf"></i>
+            </div>
+            <h4>Spring Boot</h4>
+            <p>Java Framework</p>
+          </div>
+          <div class="tech-card">
+            <div class="tech-icon maven">
+              <i class="fas fa-cube"></i>
+            </div>
+            <h4>Maven</h4>
+            <p>Build Tool</p>
+          </div>
+          <div class="tech-card">
+            <div class="tech-icon jenkins">
+              <i class="fas fa-tools"></i>
+            </div>
+            <h4>Jenkins</h4>
+            <p>CI Server</p>
+          </div>
+          <div class="tech-card">
+            <div class="tech-icon docker">
+              <i class="fab fa-docker"></i>
+            </div>
+            <h4>Docker</h4>
+            <p>Containerization</p>
+          </div>
+          <div class="tech-card">
+            <div class="tech-icon kubernetes">
+              <i class="fas fa-dharmachakra"></i>
+            </div>
+            <h4>Kubernetes</h4>
+            <p>Orchestration</p>
+          </div>
+          <div class="tech-card">
+            <div class="tech-icon argocd">
+              <i class="fas fa-sync-alt"></i>
+            </div>
+            <h4>Argo CD</h4>
+            <p>GitOps CD</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
+    <!-- Status Section -->
+    <section id="status" class="status-section">
+      <div class="container">
+        <h2 class="section-title">
+          <i class="fas fa-chart-line"></i> Application Status
+        </h2>
+        <div class="status-grid">
+          <div class="status-card">
+            <div class="status-header">
+              <i class="fas fa-heartbeat"></i>
+              <h4>Health Status</h4>
+            </div>
+            <div class="status-indicator healthy">
+              <span class="pulse"></span>
+              <span class="status-text">Healthy</span>
+            </div>
+          </div>
+          <div class="status-card">
+            <div class="status-header">
+              <i class="fas fa-layer-group"></i>
+              <h4>Replicas</h4>
+            </div>
+            <div class="status-value">2/2</div>
+            <p class="status-detail">All pods running</p>
+          </div>
+          <div class="status-card">
+            <div class="status-header">
+              <i class="fas fa-network-wired"></i>
+              <h4>Service Type</h4>
+            </div>
+            <div class="status-value">NodePort</div>
+            <p class="status-detail">Port 8080</p>
+          </div>
+          <div class="status-card">
+            <div class="status-header">
+              <i class="fas fa-clock"></i>
+              <h4>Uptime</h4>
+            </div>
+            <div class="status-value" id="uptime">00:00:00</div>
+            <p class="status-detail">Since last deployment</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <p>
+            <i class="fas fa-rocket"></i>
+            Built with Spring Boot | Deployed via CI/CD Pipeline
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script data-th-src="@{/js/main.js}"></script>
+  </body>
 </html>
