@@ -4,7 +4,7 @@ A comprehensive CI/CD implementation demonstrating automated build, test, code q
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)    <!-- - [Architecture](#architecture) -->
+- [Overview](#overview) <!-- - [Architecture](#architecture) -->
 - [Technology Stack](#technology-stack)
 - [Prerequisites](#prerequisites)
 - [Project Structure](#project-structure)
@@ -12,7 +12,7 @@ A comprehensive CI/CD implementation demonstrating automated build, test, code q
 - [Jenkins Setup](#jenkins-setup)
 - [Docker Configuration](#docker-configuration)
 - [Kubernetes Deployment](#kubernetes-deployment)
-- [Installation and Setup](#installation-and-setup)    <!-- - [GitOps Workflow](#gitops-workflow) -->
+- [Installation and Setup](#installation-and-setup) <!-- - [GitOps Workflow](#gitops-workflow) -->
 - [Application Details](#application-details)
 - [Monitoring and Maintenance](#monitoring-and-maintenance)
 - [Security Considerations](#security-considerations)
@@ -33,24 +33,26 @@ This project demonstrates a complete CI/CD pipeline for a Spring Boot web applic
 - 🏷️ **Version Tracking** - Automatic image versioning using build numbers
 - 🛡️ **Security** - Credential management via Jenkins vault
 
-
 <!-- For detailed architecture diagrams and workflows, see [ARCHITECTURE.md](./ARCHITECTURE.md). -->
 
 ## Technology Stack
 
 ### Application Layer
+
 - **Framework**: Spring Boot 2.2.4 RELEASE
 - **Language**: Java 11
 - **Template Engine**: Thymeleaf
 - **Build Tool**: Maven 3.x
 
 ### CI/CD Tools
+
 - **CI/CD Platform**: Jenkins
 - **Custom Agent**: `dinethshakya/maven-docker-agent:java17-v1`
 - **Code Quality**: SonarQube
 - **Version Control**: Git/GitHub
 
 ### Containerization & Orchestration
+
 - **Container Runtime**: Docker
 - **Base Image**: adoptopenjdk/openjdk11:alpine-jre
 - **Orchestration**: Kubernetes
@@ -62,6 +64,7 @@ This project demonstrates a complete CI/CD pipeline for a Spring Boot web applic
 Before setting up this project, ensure you have:
 
 ### Required Software
+
 - ☕ **Java 11** or higher
 - 📦 **Maven 3.x**
 - 🐳 **Docker** (for local containerization)
@@ -70,11 +73,13 @@ Before setting up this project, ensure you have:
 - 📊 **SonarQube server** (for code analysis)
 
 ### Required Accounts
+
 - 🐙 **GitHub account** with Personal Access Token (repo write permissions)
 - 🐳 **Docker Hub account** for image registry
 - ☁️ **Cloud provider account** (if using managed Kubernetes)
 
 ### Network Access
+
 - Jenkins server must reach SonarQube server
 - Jenkins server must reach Docker Hub
 - Jenkins server must reach GitHub
@@ -105,6 +110,7 @@ CI-CD-pipeline-spring-boot/
 The Jenkins pipeline consists of 5 automated stages:
 
 ### 1️⃣ Checkout
+
 **Purpose**: Retrieve the latest source code from GitHub
 
 ```groovy
@@ -120,6 +126,7 @@ stage('Checkout') {
 - Triggers automatically on code push or PR merge
 
 ### 2️⃣ Build and Test
+
 **Purpose**: Compile application and run unit tests
 
 ```bash
@@ -127,6 +134,7 @@ mvn clean package
 ```
 
 **Actions**:
+
 - Removes previous build artifacts (`mvn clean`)
 - Compiles Java source code
 - Executes JUnit tests
@@ -135,6 +143,7 @@ mvn clean package
 **Success Criteria**: All tests pass, JAR created successfully
 
 ### 3️⃣ Static Code Analysis
+
 **Purpose**: Analyze code quality, security vulnerabilities, and code coverage
 
 ```bash
@@ -144,6 +153,7 @@ mvn sonar:sonar \
 ```
 
 **Metrics Analyzed**:
+
 - 🐛 Bugs and code smells
 - 🔒 Security vulnerabilities
 - 📊 Code coverage
@@ -153,6 +163,7 @@ mvn sonar:sonar \
 **Required Credential**: `Token_For_SonarQube` (Jenkins secret text)
 
 ### 4️⃣ Build and Push Docker Image
+
 **Purpose**: Containerize the application and push to Docker Hub
 
 ```bash
@@ -161,6 +172,7 @@ docker push dinethshakya/spring-boot-app:${BUILD_NUMBER}
 ```
 
 **Image Versioning**:
+
 - Tag format: `dinethshakya/spring-boot-app:<BUILD_NUMBER>`
 - Example: `dinethshakya/spring-boot-app:42`
 - Each build creates a uniquely versioned image
@@ -168,9 +180,11 @@ docker push dinethshakya/spring-boot-app:${BUILD_NUMBER}
 **Required Credential**: `dockerhub-credentials` (Jenkins username/password)
 
 ### 5️⃣ Update Deployment File (GitOps)
+
 **Purpose**: Automatically update Kubernetes deployment configuration
 
 **Process**:
+
 1. Clone the GitHub repository
 2. Update `deployment.yml` with new image version
 3. Commit changes with message: `"Update deployment image to version ${BUILD_NUMBER}"`
@@ -180,6 +194,7 @@ docker push dinethshakya/spring-boot-app:${BUILD_NUMBER}
 **Required Credential**: `github-ci-cd` (Jenkins secret text with GitHub PAT)
 
 **Git Operations**:
+
 ```bash
 # Update image version in deployment.yml
 sed -i "s|dinethshakya/spring-boot-app:[0-9]*|dinethshakya/spring-boot-app:${BUILD_NUMBER}|g" deployment.yml
@@ -199,12 +214,14 @@ The pipeline uses a custom Docker agent with pre-installed tools:
 **Image**: `dinethshakya/maven-docker-agent:java17-v1`
 
 **Included Tools**:
+
 - Maven 3.x
 - Java 17 runtime
 - Docker CLI
 - Git
 
 **Agent Configuration**:
+
 ```groovy
 agent {
   docker {
@@ -221,11 +238,11 @@ agent {
 
 Configure these credentials in **Jenkins → Manage Jenkins → Manage Credentials**:
 
-| Credential ID | Type | Description | Permissions Required |
-|--------------|------|-------------|---------------------|
-| `Token_For_SonarQube` | Secret text | SonarQube authentication token | Execute analysis |
-| `dockerhub-credentials` | Username/Password | Docker Hub account | Push images |
-| `github-ci-cd` | Secret text | GitHub Personal Access Token | Read/write repo |
+| Credential ID           | Type              | Description                    | Permissions Required |
+| ----------------------- | ----------------- | ------------------------------ | -------------------- |
+| `Token_For_SonarQube`   | Secret text       | SonarQube authentication token | Execute analysis     |
+| `dockerhub-credentials` | Username/Password | Docker Hub account             | Push images          |
+| `github-ci-cd`          | Secret text       | GitHub Personal Access Token   | Read/write repo      |
 
 ### Environment Variables
 
@@ -316,13 +333,14 @@ curl http://localhost:8080
 The [deployment.yml](./deployment.yml) defines:
 
 **Deployment Specification**:
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: spring-boot-app
 spec:
-  replicas: 2                    # High availability
+  replicas: 2 # High availability
   selector:
     matchLabels:
       app: spring-boot-app
@@ -330,19 +348,20 @@ spec:
     spec:
       containers:
         - name: spring-boot-app
-          image: dinethshakya/spring-boot-app:1  # Updated by pipeline
+          image: dinethshakya/spring-boot-app:1 # Updated by pipeline
           ports:
             - containerPort: 8080
 ```
 
 **Service Specification**:
+
 ```yaml
 apiVersion: v1
 kind: Service
 metadata:
   name: spring-boot-service
 spec:
-  type: NodePort                # Accessible externally
+  type: NodePort # Accessible externally
   selector:
     app: spring-boot-app
   ports:
@@ -385,17 +404,20 @@ kubectl get deployments
 ### Local Development Setup
 
 1. **Clone the Repository**:
+
    ```bash
    git clone https://github.com/DinethShakya23/CI-CD-pipeline-spring-boot.git
    cd CI-CD-pipeline-spring-boot
    ```
 
 2. **Build the Application**:
+
    ```bash
    mvn clean package
    ```
 
 3. **Run Locally**:
+
    ```bash
    java -jar target/spring-boot-web.jar
    ```
@@ -423,6 +445,7 @@ docker run -d --name sonarqube -p 9000:9000 sonarqube:latest
 #### Step 2: Jenkins Setup
 
 1. **Install Jenkins** (Docker recommended):
+
    ```bash
    docker run -d -p 8080:8080 -p 50000:50000 \
      -v jenkins_home:/var/jenkins_home \
@@ -512,12 +535,14 @@ sequenceDiagram
 
 ### Spring Boot Application
 
-<!-- **Main Class**: `com.abhishek.StartApplication` -->
+<!-- **Main Class**: `com.application.StartApplication` -->
 
 **Endpoints**:
+
 - `GET /` - Home page with deployment confirmation message
 
 **Response**:
+
 ```
 Title: "I have successfully built a Spring Boot application using Maven"
 Message: "This application is deployed on to Kubernetes using Argo CD"
@@ -526,6 +551,7 @@ Message: "This application is deployed on to Kubernetes using Argo CD"
 ### Maven Configuration
 
 **Key Dependencies**:
+
 - `spring-boot-starter-web` - REST API support
 - `spring-boot-starter-thymeleaf` - Template engine
 - `spring-boot-starter-test` - Testing framework
@@ -538,12 +564,14 @@ Message: "This application is deployed on to Kubernetes using Argo CD"
 ### Pipeline Monitoring
 
 **Jenkins Dashboard**:
+
 - View build history and trends
 - Monitor build duration
 - Check test results
 - Review console logs
 
 **SonarQube Dashboard**:
+
 - Code quality metrics
 - Security vulnerabilities
 - Code coverage trends
@@ -580,6 +608,7 @@ kubectl get events --sort-by='.lastTimestamp'
 > Never commit credentials to Git. Always use Jenkins credential vault.
 
 **Best Practices**:
+
 - ✅ Use Jenkins credentials for all secrets
 - ✅ Rotate tokens regularly
 - ✅ Use least-privilege access
@@ -592,6 +621,7 @@ kubectl get events --sort-by='.lastTimestamp'
 > Mounting `/var/run/docker.sock` grants root access to the Docker daemon. Only use in trusted environments.
 
 **Mitigation**:
+
 - Use dedicated Jenkins agent node
 - Implement network segmentation
 - Consider Docker-in-Docker alternatives (buildah, kaniko)
@@ -599,6 +629,7 @@ kubectl get events --sort-by='.lastTimestamp'
 ### Image Security
 
 **Recommendations**:
+
 - Use specific base image tags (avoid `latest`)
 - Scan images for vulnerabilities (Trivy, Clair)
 - Use minimal base images (Alpine)
@@ -652,6 +683,7 @@ docker push dinethshakya/spring-boot-app:test
 **Issue**: `Failed to connect to SonarQube server`
 
 **Solutions**:
+
 1. Verify SonarQube URL is accessible from Jenkins
    ```bash
    curl http://13.235.41.162:9000
@@ -691,6 +723,7 @@ kubectl logs <pod-name>
 **Issue**: `Authentication failed` when updating deployment.yml
 
 **Solutions**:
+
 1. Verify GitHub token has `repo` scope
 2. Check token hasn't expired
 3. Ensure token belongs to repository owner
