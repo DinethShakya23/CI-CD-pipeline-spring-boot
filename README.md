@@ -1,10 +1,10 @@
 # Complete CI/CD Pipeline for Spring Boot Application
 
-A comprehensive CI/CD implementation demonstrating automated build, test, code quality analysis, containerization, and GitOps-based deployment of a Spring Boot web application.
+A comprehensive CI/CD implementation demonstrating automated build, test, code quality analysis, containerization, and GitOps-based deployment of a Spring Boot web application with real-time monitoring capabilities.
 
 ## 📋 Table of Contents
 
-- [Overview](#overview) <!-- - [Architecture](#architecture) -->
+- [Overview](#overview)
 - [Technology Stack](#technology-stack)
 - [Prerequisites](#prerequisites)
 - [Project Structure](#project-structure)
@@ -12,16 +12,18 @@ A comprehensive CI/CD implementation demonstrating automated build, test, code q
 - [Jenkins Setup](#jenkins-setup)
 - [Docker Configuration](#docker-configuration)
 - [Kubernetes Deployment](#kubernetes-deployment)
-- [Installation and Setup](#installation-and-setup) <!-- - [GitOps Workflow](#gitops-workflow) -->
+- [Installation and Setup](#installation-and-setup)
 - [Application Details](#application-details)
+- [API Endpoints](#api-endpoints)
 - [Monitoring and Maintenance](#monitoring-and-maintenance)
 - [Security Considerations](#security-considerations)
 - [Troubleshooting](#troubleshooting)
-<!-- - [Future Enhancements](#future-enhancements) -->
 
 ## Overview
 
 This project demonstrates a complete CI/CD pipeline for a Spring Boot web application using industry-standard DevOps tools and practices. The pipeline automatically builds, tests, analyzes code quality, containerizes the application, and deploys it to a Kubernetes cluster using GitOps principles.
+
+The application features a modern, responsive UI that displays real-time deployment status, application health metrics, and uptime monitoring - perfect for demonstrating a successful CI/CD implementation.
 
 ### Key Features
 
@@ -32,6 +34,9 @@ This project demonstrates a complete CI/CD pipeline for a Spring Boot web applic
 - 🔄 **GitOps** - Automated deployment updates via ArgoCD
 - 🏷️ **Version Tracking** - Automatic image versioning using build numbers
 - 🛡️ **Security** - Credential management via Jenkins vault
+- 📊 **Live Monitoring** - Real-time application health and uptime tracking
+- 🎨 **Modern UI** - Responsive interface showcasing CI/CD pipeline stages
+- 🔌 **REST API** - Health, status, and metrics endpoints
 
 <!-- For detailed architecture diagrams and workflows, see [ARCHITECTURE.md](./ARCHITECTURE.md). -->
 
@@ -93,9 +98,18 @@ CI-CD-pipeline-spring-boot/
 │   └── main/
 │       ├── java/
 │       │   └── com/
-│       │       └── StartApplication.java    # Main Spring Boot application
+│       │       └── application/
+│       │           ├── StartApplication.java              # Main Spring Boot application
+│       │           └── controller/
+│       │               └── ApplicationStatusController.java  # REST API endpoints
 │       └── resources/
-│           └── templates/                    # Thymeleaf templates
+│           ├── static/
+│           │   ├── css/
+│           │   │   └── main.css                          # Application styles
+│           │   └── js/
+│           │       └── main.js                           # Frontend logic
+│           └── templates/
+│               └── index.html                            # Main page template
 ├── maven-docker-agent/
 │   └── dockerfile                            # Custom Jenkins agent image
 ├── Jenkinsfile                               # CI/CD pipeline configuration (171 lines)
@@ -419,12 +433,45 @@ kubectl get deployments
 3. **Run Locally**:
 
    ```bash
+   # Using Maven
+   mvn spring-boot:run
+
+   # Or using JAR
    java -jar target/spring-boot-web.jar
    ```
 
-4. **Access Application**:
+4. **Configure Custom Port** (Optional):
+
+   Edit `src/main/resources/application.properties`:
+
+   ```properties
+   server.port=8081
+   ```
+
+5. **Access Application**:
+
    ```
    http://localhost:8080
+   ```
+
+   The application displays:
+   - Live deployment status
+   - CI/CD pipeline stages
+   - Technology stack visualization
+   - Real-time health monitoring
+   - Application uptime tracker
+
+6. **Test API Endpoints**:
+
+   ```bash
+   # Check status
+   curl http://localhost:8080/api/status
+
+   # Check health
+   curl http://localhost:8080/api/health
+
+   # Get application info
+   curl http://localhost:8080/api/info
    ```
 
 ### Full CI/CD Pipeline Setup
@@ -535,18 +582,103 @@ sequenceDiagram
 
 ### Spring Boot Application
 
-<!-- **Main Class**: `com.application.StartApplication` -->
+**Main Package**: `com.application`
 
-**Endpoints**:
+**Main Class**: `StartApplication.java`
 
-- `GET /` - Home page with deployment confirmation message
+The application features a modern, professional UI designed to showcase a successful CI/CD pipeline implementation. It includes:
 
-**Response**:
+#### UI Features
 
+- 🎯 **Hero Section** - Displays deployment status and key metrics (version, status, build)
+- 📊 **Pipeline Visualization** - Shows all 5 CI/CD pipeline stages with completion status:
+  - Source Code (Git)
+  - Build & Test (Maven)
+  - Code Analysis (SonarQube)
+  - Containerization (Docker)
+  - Deployment (Kubernetes + Argo CD)
+- 💻 **Technology Stack Cards** - Visual representation of all tools used:
+  - Spring Boot, Maven, Jenkins, Docker, Kubernetes, Argo CD
+- 📈 **Live Status Dashboard** - Real-time monitoring:
+  - Health status with pulse indicator
+  - Pod replica count (2/2)
+  - Service type and port
+  - Application uptime (HH:MM:SS)
+- 🎨 **Responsive Design** - Works seamlessly on desktop and mobile devices
+- ⚡ **Auto-refresh** - Status updates every 10 seconds
+
+**Page Endpoint**:
+
+- `GET /` - Main application page with full UI
+
+## API Endpoints
+
+The application exposes several REST API endpoints for monitoring and status:
+
+### `/api/status`
+
+Returns application version, build status, and uptime information.
+
+**Response Example**:
+
+```json
+{
+  "version": "1.0",
+  "buildStatus": "passing",
+  "health": "UP",
+  "uptimeSeconds": 3665,
+  "uptimeFormatted": "01:01:05",
+  "timestamp": 1709116800000,
+  "startTime": 1709113135000
+}
 ```
-Title: "I have successfully built a Spring Boot application using Maven"
-Message: "This application is deployed on to Kubernetes using Argo CD"
+
+### `/api/health`
+
+Returns health status and memory usage.
+
+**Response Example**:
+
+```json
+{
+  "status": "UP",
+  "healthy": true,
+  "memory": {
+    "used": "128.5 MB",
+    "max": "512.0 MB",
+    "usagePercent": 25
+  }
+}
 ```
+
+### `/api/info`
+
+Returns application metadata and deployment information.
+
+**Response Example**:
+
+```json
+{
+  "name": "spring-boot-demo",
+  "version": "1.0",
+  "description": "CI/CD Pipeline Spring Boot Application",
+  "build": {
+    "status": "passing",
+    "java": "11.0.x",
+    "springBoot": "2.2.4.RELEASE"
+  },
+  "deployment": {
+    "method": "CI/CD Pipeline",
+    "containerization": "Docker",
+    "orchestration": "Kubernetes",
+    "cd": "Argo CD"
+  }
+}
+```
+
+### `/api/metrics`
+
+Returns system metrics including CPU, memory, and thread information.
 
 ### Maven Configuration
 
@@ -559,7 +691,45 @@ Message: "This application is deployed on to Kubernetes using Argo CD"
 
 **Build Output**: `target/spring-boot-web.jar`
 
+**Package**: `com.application`
+
 ## Monitoring and Maintenance
+
+### Application Monitoring
+
+The application includes built-in monitoring capabilities accessible via the UI and REST API:
+
+**Live Status Tracking**:
+
+- **Health Status**: Real-time health check with visual indicator
+- **Uptime Counter**: Shows how long the current instance has been running
+- **Memory Usage**: JVM memory consumption and limits
+- **Build Information**: Current version and build status
+
+**Understanding Uptime Behavior**:
+
+The uptime counter tracks the JVM runtime and resets when:
+
+- ✅ Code is pushed to Git → Pipeline triggered → New deployment → **Uptime resets to 00:00:00**
+- ✅ Kubernetes pods restart
+- ✅ Application crashes and recovers
+- ❌ **Local changes without push** → Uptime continues unchanged
+
+**Monitoring Workflow**:
+
+```bash
+# Watch live status updates
+curl -s http://your-app-url/api/status | jq
+
+# Monitor health
+watch -n 5 'curl -s http://your-app-url/api/health | jq'
+
+# Check uptime
+curl -s http://your-app-url/api/status | jq '.uptimeFormatted'
+```
+
+> [!NOTE]
+> If your CI/CD pipeline is configured with auto-sync (recommended for this demo), every Git push triggers a full deployment cycle, resulting in new pods and reset counters.
 
 ### Pipeline Monitoring
 
@@ -799,4 +969,22 @@ This project is created for educational and demonstration purposes. -->
 
 ---
 
-**Last Updated**: February 2026
+## Summary
+
+This project demonstrates a production-ready CI/CD pipeline that showcases modern DevOps practices:
+
+✅ **Automated Everything** - From code commit to production deployment  
+✅ **Quality Gates** - SonarQube ensures code quality standards  
+✅ **GitOps Principles** - Infrastructure as Code with Argo CD  
+✅ **Container-First** - Docker and Kubernetes for scalability  
+✅ **Real-Time Monitoring** - Live status tracking and health metrics  
+✅ **Professional UI** - Modern interface demonstrating successful deployment
+
+**Perfect for**: Learning DevOps, Portfolio projects, Medium articles, Technical demonstrations
+
+**Technologies**: Spring Boot • Maven • Jenkins • SonarQube • Docker • Kubernetes • Argo CD
+
+---
+
+**Last Updated**: February 2026  
+**Status**: Production Ready ✅
